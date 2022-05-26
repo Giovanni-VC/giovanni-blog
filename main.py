@@ -33,7 +33,7 @@ gravatar = Gravatar(app,
                     base_url=None)
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -77,7 +77,7 @@ class Comment(db.Model):
     text = db.Column(db.Text, nullable=False)
 
 
-db.create_all()
+# db.create_all()
 
 isAdmin = False
 
@@ -88,7 +88,7 @@ def admin_required(f):
     def decorated_function(*args, **kwargs):
         global isAdmin
 
-        if not isAdmin:
+        if current_user.id != 1:
             return abort(403)
         return f(*args, **kwargs)
     return decorated_function
